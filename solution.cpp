@@ -68,7 +68,22 @@ void solution::fit_fun(matrix O)
 	}
 
 	y = abs(max - target_temp);
-
+	#elif LAB_NO== 3 && LAB_PART==1
+	y = x(0) * x(0) + x(1) * x(1) - cos(2.5 * 3.14 * x(0)) - cos(2.5 * 3.14 * x(1)) + 2;
+	#elif LAB_NO== 3 && LAB_PART==2
+	double a_ref = 3.14, o_ref = 0;
+	matrix Y0(2, 1);
+	double dt = 0.1;
+	matrix* Y = solve_ode(0, dt, 100, Y0, x);
+	int* n = get_size(Y[1]);
+	y(0) = 0;
+	for (int i = 0; i < n[0]; i++)
+	{
+		y = y + 10 * pow(a_ref - Y[1](i, 0), 2) +
+			pow(o_ref - Y[1](i, 1), 2) +
+			pow(x(0) * (a_ref - Y[1](i, 0)) + x(1) * (o_ref - Y[1](i, 1)), 2);
+	}
+	y = y * dt;
 	#endif
 	++f_calls;
 }

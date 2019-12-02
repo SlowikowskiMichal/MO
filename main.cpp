@@ -16,7 +16,7 @@ int main()
 		cout << "TASK " << TASK << endl << endl;
 #if LAB_NO==1
 		matrix Y0 = matrix(new double[3]{ 5,1,10 }, 3);
-		matrix *Y = solve_ode(0.0, 1.0, 1000.0, Y0);
+		matrix* Y = solve_ode(0.0, 1.0, 1000.0, Y0);
 		ofstream S("sim_t.csv");
 		S << Y[0];
 		S.close();
@@ -32,10 +32,10 @@ int main()
 			double x0, d = 1.0, alfa = 1.5, epsilon = 1e-5, gamma = 1e-200;
 			int Nmax = 1000;
 			random_device R;
-			x0 = 200.0*R() / R.max() - 100;
+			x0 = 200.0 * R() / R.max() - 100;
 			file << x0 << ";";
 			cout << x0 << endl << endl;
-			double *ab = expansion(x0, d, alfa, Nmax);
+			double* ab = expansion(x0, d, alfa, Nmax);
 			cout << ab[0] << '\t' << ab[1] << endl << endl;
 			file << ab[0] << ";" << ab[1] << ";" << solution::f_calls << ";";
 			solution::clear_calls();
@@ -66,9 +66,9 @@ int main()
 		double x0, d = 1.0, alfa = 1.5, epsilon = 1e-5, gamma = 1e-200;
 		int Nmax = 1000;
 		random_device R;
-		x0 = 200.0*R() / R.max() - 100;
+		x0 = 200.0 * R() / R.max() - 100;
 		cout << x0 << endl << endl;
-		double *ab = expansion(x0, d, alfa, Nmax);
+		double* ab = expansion(x0, d, alfa, Nmax);
 		cout << ab[0] << '\t' << ab[1] << endl << endl;
 		solution::clear_calls();
 		solution opt_F = fib(ab[0], ab[1], epsilon);
@@ -83,9 +83,9 @@ int main()
 		double x0, d = 1e-4, alfa = 1.5, epsilon = 1e-10, gamma = 1e-200;
 		int Nmax = 1000;
 		random_device R;
-		x0 = (1e-2 - 1e-4)*R() / R.max() + 1e-4;
+		x0 = (1e-2 - 1e-4) * R() / R.max() + 1e-4;
 		cout << x0 << endl << endl;
-		double *ab = expansion(x0, d, alfa, Nmax);
+		double* ab = expansion(x0, d, alfa, Nmax);
 		cout << ab[0] << '\t' << ab[1] << endl << endl;
 		solution::clear_calls();
 		solution opt_F = fib(ab[0], ab[1], epsilon);
@@ -96,7 +96,7 @@ int main()
 		solution::clear_calls();
 #elif TASK == 5 // symlacja dla wyszukanego DA w TASK == 4
 		matrix Y0 = matrix(new double[3]{ 5,1,10 }, 3);
-		matrix *Y = solve_ode(0.0, 1.0, 1000.0, Y0);
+		matrix * Y = solve_ode(0.0, 1.0, 1000.0, Y0);
 		ofstream S("sim_t2.csv");
 		S << Y[0];
 		S.close();
@@ -107,18 +107,60 @@ int main()
 #endif
 
 #elif LAB_NO==3
+#if LAB_PART==1
+		matrix x0(2, 1);
+		double alfa, beta, epsilon = 1e-3, s = 0.1;
+		random_device R;
+		int Nmax = 100;
+		x0(0) = 2.0 * R() / R.max() - 1;
+		x0(1) = 2.0 * R() / R.max() - 1;
+		cout << x0 << endl << endl;
+		alfa = 0.5;
+		solution opt_HJ = HJ(x0, s, alfa, epsilon, Nmax);
+		cout << opt_HJ << endl << endl;
+		solution::clear_calls();
 
+		alfa = 2.0;
+		beta = 0.5;
+		matrix s0(2, 1);
+		s0(0) = s;
+		s0(1) = s;
+		solution opt_R = Rosen(x0, s0, alfa, beta, epsilon, Nmax);
+		cout << opt_R << endl;
+		solution::clear_calls();
+#elif LAB_PART==2
+		matrix x0(2, 1);
+		double alfa, beta, epsilon = 1e-3, s = 0.5;
+		random_device R;
+		int Nmax = 100;
+		x0(1) = 10.0 * R() / R.max();
+		x0(0) = 10.0 * R() / R.max();
+		cout << x0 << endl << endl;
+		alfa = 0.5;
+		solution opt_HJ = HJ(x0, s, alfa, epsilon, Nmax);
+		cout << opt_HJ << endl << endl;
+		solution::clear_calls();
+
+		alfa = 2.0;
+		beta = 0.5;
+		matrix s0(2, 1);
+		s0(0) = s;
+		s0(1) = s;
+		solution opt_R = Rosen(x0, s0, alfa, beta, epsilon, Nmax);
+		cout << opt_R << endl;
+		solution::clear_calls();
+#endif
 #elif LAB_NO==4
 
 #elif LAB_NO==5
-		
+
 #elif LAB_NO==6
 
 #elif LAB_NO==7
 
 #endif
 	}
-	catch (char * EX_INFO)
+	catch (char* EX_INFO)
 	{
 		cout << EX_INFO << endl;
 	}

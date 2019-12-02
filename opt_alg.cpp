@@ -151,25 +151,25 @@ solution HJ(matrix x0, double s, double alfa, double epsilon, int Nmax, matrix O
 	XB.fit_fun();
 	while (true)
 	{
-		X = 
-		if ()
+		X = HJ_trial(XB, s);
+		if (X.y < XB.y)
 		{
 			while (true)
 			{
-				XB_old = 
-				XB = 
-				X.x = 
+				XB_old = XB;
+				XB = X;
+				X.x = 2.0 * XB.x - XB_old.x;
 				X.fit_fun();
-				X = 
-				if ()
+				X = HJ_trial(X, s);
+				if (X.y >= XB.y)
 					break;
-				if ()
+				if (solution::f_calls > Nmax)
 					return XB;
 			}
 		}
 		else
-			s =
-		if ()
+			s *= alfa;
+		if (s < epsilon || solution::f_calls>Nmax)
 			return XB;
 	}
 }
@@ -181,16 +181,16 @@ solution HJ_trial(solution XB, double s, matrix O)
 	solution X;
 	for (int i = 0; i < n[0]; ++i)
 	{
-		X.x = 
+		X.x = XB.x + s * D[i];
 		X.fit_fun();
-		if ()
-			XB = 
+		if (X.y < XB.y)
+			XB = X;
 		else
 		{
-			X.x = 
+			X.x = XB.x - s * D[i];
 			X.fit_fun();
-			if ()
-				XB = 
+			if (X.y < XB.y)
+				XB = X;
 		}
 	}
 	return XB;
@@ -205,20 +205,20 @@ solution Rosen(matrix x0, matrix s0, double alfa, double beta, double epsilon, i
 	X.fit_fun();
 	while (true)
 	{
-		for (int i = 0; i < ; ++i)
+		for (int i = 0; i < n[0]; ++i)
 		{
-			Xt.x = 
+			Xt.x = X.x + s(i) * D[i];
 			Xt.fit_fun();
-			if ()
+			if (Xt.y<X.y)
 			{
-				X = 
-				l(i) 
-				s(i) =
+				X = Xt;
+				l(i) += s(i);
+				s(i) *= alfa;
 			}
 			else
 			{
 				++p(i);
-				s(i) =
+				s(i) *= -beta;
 			}
 		}
 		bool change = true;
@@ -231,29 +231,29 @@ solution Rosen(matrix x0, matrix s0, double alfa, double beta, double epsilon, i
 		if (change)
 		{
 			matrix Q(n[0], n[0]), v(n[0], 1);
-			for (int i = 0; i <  ++i)
-				for (int j = 0; j <=  ++j)
-					Q(i, j) = 
-			Q = 
-			v = 
-			D = 
-			for (int i = 1; i < ; ++i)
+			for (int i = 0; i < n[0]; ++i)
+				for (int j = 0; j <= i; ++j)
+					Q(i, j) = l(i); //l to lambda
+			Q = D * Q;
+			v = Q[0] / norm(Q[0]);
+			D = set_col(D, v, 0);
+			for (int i = 1; i < n[0]; ++i)
 			{
 				matrix temp(n[0], 1);
-				for (int j = 0; j < ; ++j)
-					temp = 
-				v = 
+				for (int j = 0; j < i; ++j)
+					temp = temp + trans(Q[i]) * D[j] * D[j];
+				v = (Q[i] - temp) / norm(Q[i] - temp);
 				D = set_col(D, v, i);
 			}
-			s = 
-			l = 
-			p = 
+			s = s0;
+			l = matrix(n[0], 1);
+			p = matrix(n[0], 1);
 		}
 		double max_s = abs(s(0));
 		for (int i = 1; i < n[0]; ++i)
 			if (max_s < abs(s(i)))
 				max_s = abs(s(i));
-		if ()
+		if (max_s < epsilon || solution::f_calls>Nmax)
 			return X;
 	}
 }
