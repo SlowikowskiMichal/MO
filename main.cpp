@@ -151,8 +151,67 @@ int main()
 		solution::clear_calls();
 #endif
 #elif LAB_NO==4
+#if LAB_PART == 1
+	matrix x0(2);
+	double a, c = 1, dc = 2, epsilon = 1e-4;
+	int Nmax = 500;
+	random_device R;
+	a = 4;
+	do
+	{
+		x0(0) = 5.0 * R() / R.max() + 1;
+		x0(1) = 5.0 * R() / R.max() + 1;
+	} while (sqrt(pow(x0(0), 2) + pow(x0(1), 2)) > a);
+	cout << x0 << endl;
+	cout << sqrt(pow(x0(0), 2) + pow(x0(1), 2)) << endl << endl;
 
+	solution opt = pen(x0, c, dc, epsilon, Nmax, a);
+	cout << opt << endl;
+	cout << sqrt(pow(opt.x(0), 2) + pow(opt.x(1), 2)) << endl;
+	solution::clear_calls();
+#elif LAB_PART == 2
+	matrix x0(2);
+	double a, c = 1, dc = 2, epsilon = 1e-4;
+	int Nmax = 10000;
+	random_device R;
+	a = 4;
+	do
+	{
+		x0(0) = 5.0 * R() / R.max() + 1;
+		x0(1) = 5.0 * R() / R.max() + 1;
+	} while (sqrt(pow(x0(0), 2) + pow(x0(1), 2)) > a);
+	cout << x0 << endl;
+	cout << sqrt(pow(x0(0), 2) + pow(x0(1), 2)) << endl << endl;
+	
+	solution opt = pen(x0, c, dc, epsilon, Nmax, a);
+	cout << opt << endl;
+	cout << sqrt(pow(opt.x(0), 2) + pow(opt.x(1), 2)) << endl;
+	solution::clear_calls();
+#elif LAB_PART == 3
+matrix Y0(new double[4]{ 0,x(0),100,0 }, 4);
+matrix* Y = solve_ode(0, 0.01, 7, Y0, x(1));
+#endif
 #elif LAB_NO==5
+	matrix x0(2, 1), limits(2, 2);
+	double epsilon = 1e-3, h0;
+	int Nmax = 5000;
+	random_device R;
+	limits(0, 0) = limits(1, 0) = -10;
+	limits(1, 1) = limits(0, 1) = -0;
+	x0(0) = (limits(0, 1) - limits(0, 0)) * R() / R.max() + limits(0, 0);
+	x0(1) = (limits(1, 1) - limits(1, 0)) * R() / R.max() + limits(1, 0);
+	cout << x0 << endl << endl;
+	h0 = 0.05;
+	solution opt_SD = SD(x0, h0, epsilon, Nmax, limits);
+	cout << opt_SD << endl << endl;
+	solution::clear_calls();
+	solution opt_CG = CG(x0, h0, epsilon, Nmax, limits);
+	cout << opt_CG << endl << endl;
+	solution::clear_calls();
+	solution opt_Newton = Newton(x0, h0, epsilon, Nmax, limits);
+	cout << opt_Newton << endl << endl;
+	solution::clear_calls();
+
 
 #elif LAB_NO==6
 
