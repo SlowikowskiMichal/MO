@@ -112,12 +112,18 @@ int main()
 		double alfa, beta, epsilon = 1e-3, s = 0.1;
 		random_device R;
 		int Nmax = 100;
-		x0(0) = 2.0 * R() / R.max() - 1;
-		x0(1) = 2.0 * R() / R.max() - 1;
-		cout << x0 << endl << endl;
+		x0(0) = -0.203577;
+
+
+			;//2.0 * R() / R.max() - 1;
+		x0(1) = 0.272492;//2.0 * R() / R.max() - 1;
+		//cout << x0 << endl << endl;
 		alfa = 0.5;
+		//cout << "----------------------------"<<endl;
+		//cout << x0(0) << " " << x0(1) <<endl;
 		solution opt_HJ = HJ(x0, s, alfa, epsilon, Nmax);
-		cout << opt_HJ << endl << endl;
+		//cout << opt_HJ << endl << endl;
+		//cout << "----------------------------" << endl;
 		solution::clear_calls();
 
 		alfa = 2.0;
@@ -125,16 +131,19 @@ int main()
 		matrix s0(2, 1);
 		s0(0) = s;
 		s0(1) = s;
+		//cout << "----------------------------" << endl;
+		//cout << x0(0) << " " << x0(1) << endl;
 		solution opt_R = Rosen(x0, s0, alfa, beta, epsilon, Nmax);
-		cout << opt_R << endl;
+		//cout << opt_R << endl;
+		//cout << "----------------------------" << endl;
 		solution::clear_calls();
 #elif LAB_PART==2
-		matrix x0(2, 1);
+		/*matrix x0(2, 1);
 		double alfa, beta, epsilon = 1e-3, s = 0.5;
 		random_device R;
 		int Nmax = 100;
-		x0(1) = 10.0 * R() / R.max();
-		x0(0) = 10.0 * R() / R.max();
+		x0(1) = 3.49888;//10.0 * R() / R.max();
+		x0(0) = 8.263;//10.0 * R() / R.max();
 		cout << x0 << endl << endl;
 		alfa = 0.5;
 		solution opt_HJ = HJ(x0, s, alfa, epsilon, Nmax);
@@ -149,6 +158,15 @@ int main()
 		solution opt_R = Rosen(x0, s0, alfa, beta, epsilon, Nmax);
 		cout << opt_R << endl;
 		solution::clear_calls();
+		*/
+		matrix x0(2, 1);
+		double alfa, beta, epsilon = 1e-3, s = 0.5;
+		x0(1) = 2.77232;//10.0 * R() / R.max();
+		x0(0) = 3.18488;//10.0 * R() / R.max();
+		solution X;
+		X.x = x0;
+		X.fit_fun();
+
 #endif
 #elif LAB_NO==4
 

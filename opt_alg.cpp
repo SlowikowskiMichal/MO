@@ -149,6 +149,7 @@ solution HJ(matrix x0, double s, double alfa, double epsilon, int Nmax, matrix O
 	solution XB, XB_old, X;
 	XB.x = x0;
 	XB.fit_fun();
+	cout << XB.x(0) << " " << XB.x(1) << endl;
 	while (true)
 	{
 		X = HJ_trial(XB, s);
@@ -161,14 +162,23 @@ solution HJ(matrix x0, double s, double alfa, double epsilon, int Nmax, matrix O
 				X.x = 2.0 * XB.x - XB_old.x;
 				X.fit_fun();
 				X = HJ_trial(X, s);
+				
+				cout << XB.x(0) << " " << XB.x(1) << endl;
 				if (X.y >= XB.y)
+				{
+					
 					break;
+				}
 				if (solution::f_calls > Nmax)
+				{
+					cout << XB.x(0) << " " << XB.x(1) << endl;
 					return XB;
+				}
 			}
 		}
 		else
 			s *= alfa;
+		cout << XB.x(0) << " " << XB.x(1) << endl;
 		if (s < epsilon || solution::f_calls>Nmax)
 			return XB;
 	}
@@ -253,6 +263,7 @@ solution Rosen(matrix x0, matrix s0, double alfa, double beta, double epsilon, i
 		for (int i = 1; i < n[0]; ++i)
 			if (max_s < abs(s(i)))
 				max_s = abs(s(i));
+		//cout << X.x(0) << " " << X.x(1) << endl;
 		if (max_s < epsilon || solution::f_calls>Nmax)
 			return X;
 	}

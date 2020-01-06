@@ -82,6 +82,7 @@ void solution::fit_fun(matrix O)
 		y = y + 10 * pow(a_ref - Y[1](i, 0), 2) +
 			pow(o_ref - Y[1](i, 1), 2) +
 			pow(x(0) * (a_ref - Y[1](i, 0)) + x(1) * (o_ref - Y[1](i, 1)), 2);
+		cout << Y[1](i, 0) << " " << Y[1](i, 1) << " " << i * dt << endl;
 	}
 	y = y * dt;
 	#endif

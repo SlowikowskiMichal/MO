@@ -338,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/sim_vlab3rosen.csv
+/sim_tlab3rosen.csv
+/sim_t3.csv
