@@ -391,7 +391,7 @@ solution SD(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 
 solution CG(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 {
-	int *n = get_size(x0);
+	int* n = get_size(x0);
 	solution X, X1;
 	X.x = x0;
 	matrix d(n[0], 1), P(n[0], 2), limits = O;
@@ -403,15 +403,14 @@ solution CG(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 	{
 		P = set_col(P, X.x, 0);
 		P = set_col(P, d, 1);
-		if (h0 < 0)
-		{
+		if (h0 < 0) {
 			b = compute_b(X.x, d, limits);
 			h = golden(0, b, epsilon, Nmax, P);
 			X1.x = X.x + h.x * d;
 		}
 		else
 		{
-			X.x = X.x + h0 * d;
+			X1.x = X.x + h0 * d;
 		}
 		if (solution::f_calls > Nmax || solution::g_calls > Nmax || norm(X1.x - X.x) < epsilon)
 		{
