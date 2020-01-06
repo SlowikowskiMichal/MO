@@ -74,6 +74,19 @@ matrix diff(double t, const matrix &Y, matrix P)
 	matrix dY(Y);
 	dY(0) = Y(1);
 	dY(1) = (P(0) * (a_ref - Y(0)) + (P(1) * (o_ref - Y(1))) - b * Y(1)) / I;
+#elif LAB_NO==4 && LAB_PART==3
+	double C = 0.47, r = 0.12, m = 0.6, ro = 1.2, g = 9.81;
+	double S = 3.14 * r * r,
+		Dx = 0.5 * C * ro * S * Y(1) * abs(Y(1)),
+		Dy = 0.5 * C * ro * S * Y(3) * abs(Y(3)),
+		FMx = 3.14 * ro * Y(3) * P(0) * pow(r, 3),
+		FMy = 3.14 * ro * Y(1) * P(0) * pow(r, 3);
+	matrix dY(Y);
+	dY(0) = Y(1);
+	dY(1) = (-Dx - FMx) / m;
+	dY(2) = Y(3);
+	dY(3) = (-Dy - FMy - m * g) / m;
+	return dY
 #else 
 	matrix dY(Y);
 	
