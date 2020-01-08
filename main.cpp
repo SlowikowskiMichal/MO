@@ -232,7 +232,39 @@ matrix* Y = solve_ode(0, 0.01, 7, Y0, x(1));
 
 
 #elif LAB_NO==6
+#if LAB_PART == 1
+	matrix x0(2), limits(2, 3);
+	double epsilon = 1e-3;
+	int Nmax = 5000;
+	random_device R;
+	limits(0, 0) = limits(1, 0) = -10;
+	limits(1, 1) = limits(0, 1) = 10;
+	double w = 0.5;
+	x0(0) = 1;// (limits(0, 1) - limits(0, 0))* R() / R.max() + limits(0, 0);
+	x0(1) = 1;// (limits(1, 1) - limits(1, 0))* R() / R.max() + limits(1, 0);
+	limits(0, 2) = w;
+	solution opt = Powell(x0, epsilon, Nmax, limits);
+	cout << opt << endl;
+	solution::clear_calls();
+#else
+	matrix x0(2), limits(2, 3);
+	double epsilon = 1e-3;
+	int Nmax = 5000;
+	random_device R;
+	limits(0, 0) = 0.2;
+	limits(0, 1) = 1;
+	limits(1, 0) = 0.01;
+	limits(1, 1) = 0.05;
+	double w = 1;
+	x0(0) = (limits(0, 1) - limits(0, 0))* R() / R.max() + limits(0, 0);
+	x0(1) = (limits(1, 1) - limits(1, 0))* R() / R.max() + limits(1, 0);
+	limits(0, 2) = w;
+	solution opt = Powell(x0, epsilon, Nmax, limits);
+	cout << opt << endl;
+	solution::clear_calls();
+	
 
+#endif
 #elif LAB_NO==7
 
 #endif
