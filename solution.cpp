@@ -125,11 +125,9 @@ void solution::fit_fun(matrix O)
 	#elif LAB_PART == 3
 	#endif
 	#elif LAB_NO == 5
-	int* n = get_size(O);
+	int *n = get_size(O);
 	if (n[1] == 1)
-	{
 		y = pow(x(0) + 2 * x(1) - 7, 2) + pow(2 * x(0) + x(1) - 5, 2);
-	}
 	else
 	{
 		solution temp;

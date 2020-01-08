@@ -7,6 +7,7 @@
 
 using namespace std;
 
+void lab_5_print(matrix x0, matrix limits, double epsilon, int Nmax, double h0, ofstream& S_optSD, ofstream& S_optCG, ofstream& S_optNewton);
 int main()
 {
 	try
@@ -215,20 +216,41 @@ matrix* Y = solve_ode(0, 0.01, 7, Y0, x(1));
 	int Nmax = 5000;
 	random_device R;
 	limits(0, 0) = limits(1, 0) = -10;
-	limits(1, 1) = limits(0, 1) = -0;
-	x0(0) = (limits(0, 1) - limits(0, 0)) * R() / R.max() + limits(0, 0);
-	x0(1) = (limits(1, 1) - limits(1, 0)) * R() / R.max() + limits(1, 0);
-	cout << x0 << endl << endl;
-	h0 = 0.05;
-	solution opt_SD = SD(x0, h0, epsilon, Nmax, limits);
-	cout << opt_SD << endl << endl;
-	solution::clear_calls();
-	solution opt_CG = CG(x0, h0, epsilon, Nmax, limits);
-	cout << opt_CG << endl << endl;
-	solution::clear_calls();
-	solution opt_Newton = Newton(x0, h0, epsilon, Nmax, limits);
-	cout << opt_Newton << endl << endl;
-	solution::clear_calls();
+	limits(1, 1) = limits(0, 1) = 10;
+
+	ofstream S_SD("SD.csv");
+	ofstream S_CG("CG.csv");
+	ofstream S_New("New.csv");
+	ofstream S_X1X2("Majtasy.csv");
+
+
+	S_SD << "X1;X2;Y;F_calls;G_Calls;H_Calls\n";
+	S_CG << "X1;X2;Y;F_calls;G_Calls;H_Calls\n";
+	S_New << "X1;X2;Y;F_calls;G_Calls;H_Calls\n";
+	S_X1X2 << "X1;X2\n";
+	for (int i = 0; i < 100; i++)
+	{
+
+		x0(0) = (limits(0, 1) - limits(0, 0))* R() / R.max() + limits(0, 0);
+		x0(1) = (limits(1, 1) - limits(1, 0))* R() / R.max() + limits(1, 0);
+		//cout << x0 << endl << endl;
+		S_X1X2 << x0(0)<<";"<< x0(1)<<endl<<" ; "<<endl << " ; " <<endl
+			;
+		h0 = 0.05;
+		lab_5_print(x0, limits, epsilon, Nmax, h0, S_SD, S_CG, S_New);
+
+		h0 = 0.12;
+		lab_5_print(x0, limits, epsilon, Nmax, h0, S_SD, S_CG, S_New);
+		
+		h0 = -1;
+		lab_5_print(x0, limits, epsilon, Nmax, h0, S_SD, S_CG, S_New);
+	}
+	S_SD.close();
+	S_CG.close();
+	S_New.close();
+	S_X1X2.close();
+
+
 
 
 #elif LAB_NO==6
@@ -275,4 +297,20 @@ matrix* Y = solve_ode(0, 0.01, 7, Y0, x(1));
 	}
 	system("pause");
 	return 0;
+}
+
+void lab_5_print(matrix x0, matrix limits, double epsilon, int Nmax, double h0, ofstream &S_optSD , ofstream& S_optCG, ofstream& S_optNewton)
+{
+	solution opt_SD = SD(x0, h0, epsilon, Nmax, limits);
+	//S_optSD << x0(0) << ";" << x0(1) << ";" << opt_SD.x(0) << ";" << opt_SD.x(1) << ";" << opt_SD.y(0) << ";" << opt_SD.f_calls << ";" << opt_SD.g_calls << ";" << opt_SD.H_calls << endl;
+	//cout << opt_SD << endl << endl;
+	solution::clear_calls();
+	solution opt_CG = CG(x0, h0, epsilon, Nmax, limits);
+	//S_optCG << x0(0) << ";" << x0(1) << ";" << opt_CG.x(0) << ";" << opt_CG.x(1) << ";" << opt_CG.y(0) << ";" << opt_CG.f_calls << ";" << opt_CG.g_calls << ";" << opt_CG.H_calls << endl;
+	//cout << opt_CG << endl << endl;
+	solution::clear_calls();
+	solution opt_Newton = Newton(x0, h0, epsilon, Nmax, limits);
+	//S_optNewton << x0(0) << ";" << x0(1) << ";" << opt_Newton.x(0) << ";" << opt_Newton.x(1) << ";" << opt_Newton.y(0) << ";" << opt_Newton.f_calls << ";" << opt_Newton.g_calls << ";" << opt_Newton.H_calls << endl;
+	//cout << opt_Newton << endl << endl;
+	solution::clear_calls();
 }

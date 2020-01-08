@@ -1,12 +1,13 @@
 ﻿#include"opt_alg.h"
+#include<fstream>
 #if LAB_NO>1
 double *expansion(double x0, double d, double alfa, int Nmax, matrix O)
 {
-	double *p = new double[2];
+	double *p = new double[3];
 	solution X0(x0), X1(x0 + d);
 	X0.fit_fun();
 	X1.fit_fun();
-	if (X0.y==X1.y)
+	if (X0.y == X1.y)
 	{
 		p[0] = X0.x(0);
 		p[1] = X1.x(0);
@@ -28,69 +29,60 @@ double *expansion(double x0, double d, double alfa, int Nmax, matrix O)
 	int i = 1;
 	while (true)
 	{
-		X2.x = x0 + pow(alfa, i)*d;
+		X2.x = x0 + pow(alfa, i)* d;
 		X2.fit_fun();
-		if (X2.y >=X1.y || solution::f_calls>Nmax)
+		if (X2.y>= X1.y || solution::f_calls>Nmax)
 			break;
 		X0 = X1;
 		X1 = X2;
 		++i;
 	}
+	p[2] = solution::f_calls;
 	d > 0 ? p[0] = X0.x(0), p[1] = X2.x(0) : (p[0] = X2.x(0), p[1] = X0.x(0));
 	return p;
 }
 
 solution fib(double a, double b, double epsilon, matrix O)
 {
-#if LAB_NO == 2 && LAB_PART == 1 && TASK == 2
-	fstream file("wynik1.txt", ios::app);
-#endif
 	int n = static_cast<int>(ceil(log2(sqrt(5)*(b - a) / epsilon) / log2((1 + sqrt(5)) / 2)));
 	int *F = new int[n] {1, 1};
 	for (int i = 2; i < n; ++i)
 		F[i] = F[i - 2] + F[i - 1];
 	solution A(a), B(b), C, D;
-	C.x = B.x - (1.0*F[n - 2] / F[n - 1]) * (B.x - A.x);
+	C.x = B.x - 1.0*F[n - 2] / F[n - 1] * (B.x - A.x);
 	D.x = A.x + B.x - C.x;
+	ofstream file("fib.txt");
 	C.fit_fun();
 	D.fit_fun();
-	for (int i = 0; i <= n - 4; ++i)
+	file << B.x - A.x << endl;
+	for (int i = 0; i <= n-3; ++i)
 	{
-#if LAB_NO == 2 && LAB_PART == 1 && TASK == 2
-		file << B.x - A.x << endl;
-#endif
 		if (C.y < D.y)
 			B = D;
 		else
 			A = C;
-		C.x = B.x - 1.0*F[n - i - 2] / F[n - i - 1] * (B.x - A.x);
+		C.x = B.x - 1.0 *F[n - i - 2] / F[n - i - 1] * (B.x - A.x);
 		D.x = A.x + B.x - C.x;
 		C.fit_fun();
 		D.fit_fun();
-
+		file << B.x - A.x << endl;
 	}
-#if LAB_NO == 2 && LAB_PART == 1 && TASK == 2
 	file.close();
-#endif
 	return C;
 }
 
 solution lag(double a, double b, double epsilon, double gamma, int Nmax, matrix O)
-{ //w ksi¹¿ce 2 razy F(c) powinno byæ raz F(D) i m < 0, tutaj musi byæ m > 0 przez odwrócony znak
-#if LAB_NO == 2 && LAB_PART == 1 && TASK == 2
-	fstream file("wynik2.txt", ios::app);
-#endif
+{
 	solution A(a), B(b), C, D;
-	C.x = (a + b) / 2.0;
+	C.x = (a + b) / 2;
+	ofstream file("lag.txt");
 	A.fit_fun();
 	B.fit_fun();
 	C.fit_fun();
+	file << B.x - A.x << endl;
 	double l, m;
 	while (true)
 	{
-#if LAB_NO == 2 && LAB_PART == 1 && TASK == 2
-		file << B.x - A.x << endl;
-#endif
 		l = A.y(0)*(pow(B.x(0), 2) - pow(C.x(0), 2)) + B.y(0)*(pow(C.x(0), 2) - pow(A.x(0), 2)) + C.y(0)*(pow(A.x(0), 2) - pow(B.x(0), 2));
 		m = A.y(0)*(B.x(0) - C.x(0)) + B.y(0)*(C.x(0) - A.x(0)) + C.y(0)*(A.x(0) - B.x(0));
 		if (m<=0)
@@ -99,11 +91,13 @@ solution lag(double a, double b, double epsilon, double gamma, int Nmax, matrix 
 			C.y = NAN;
 			return C;
 		}
-		D.x = 0.5*l / m;
+		D.x = 0.5 *l / m;
 		D.fit_fun();
-		if (A.x <= D.x && D.x < C.x) //A D C B
+		file << B.x - A.x << endl;
+		if (A.x<=D.x && D.x<=C.x)
 		{
-			if (D.y < C.y) {
+			if (D.y<C.y)
+			{
 				B = C;
 				C = D;
 			}
@@ -112,33 +106,28 @@ solution lag(double a, double b, double epsilon, double gamma, int Nmax, matrix 
 				A = D;
 			}
 		}
-		else {
-			if (C.x <= D.x && D.x <= B.x) // A C D B
+		else if (C.x<=D.x&&D.x<=B.x)
+		{
+			if (D.y<C.y)
 			{
-				if (D.y < C.y) {
-					A = C;
-					C = D;
-				}
-				else
-				{
-					B = D;
-				}
+				A = C;
+				C = D;
 			}
 			else
 			{
-				C.x = NAN;
-				C.y = NAN;
-				return C;
+				B = D;
 			}
 		}
-		if (B.x - A.x < epsilon ||
-			abs(C.x(0) - D.x(0)) <= gamma
-			|| solution::f_calls > Nmax) {
-			//return C;
-#if LAB_NO == 2 && LAB_PART == 1 && TASK == 2
+		else
+		{
+			C.x = NAN;
+			C.y = NAN;
+			return C;
+		}
+		if (B.x - A.x < epsilon || abs(C.x(0) - D.x(0)) < gamma || solution::f_calls > Nmax)
+		{
 			file.close();
-#endif
-			return D;
+			return C;
 		}
 	}
 }
@@ -149,7 +138,6 @@ solution HJ(matrix x0, double s, double alfa, double epsilon, int Nmax, matrix O
 	solution XB, XB_old, X;
 	XB.x = x0;
 	XB.fit_fun();
-	cout << XB.x(0) << " " << XB.x(1) << endl;
 	while (true)
 	{
 		X = HJ_trial(XB, s);
@@ -159,27 +147,18 @@ solution HJ(matrix x0, double s, double alfa, double epsilon, int Nmax, matrix O
 			{
 				XB_old = XB;
 				XB = X;
-				X.x = 2.0 * XB.x - XB_old.x;
+				X.x = 2.0 *XB.x - XB_old.x;
 				X.fit_fun();
 				X = HJ_trial(X, s);
-				
-				cout << XB.x(0) << " " << XB.x(1) << endl;
 				if (X.y >= XB.y)
-				{
-					
 					break;
-				}
 				if (solution::f_calls > Nmax)
-				{
-					cout << XB.x(0) << " " << XB.x(1) << endl;
 					return XB;
-				}
 			}
 		}
 		else
 			s *= alfa;
-		cout << XB.x(0) << " " << XB.x(1) << endl;
-		if (s < epsilon || solution::f_calls>Nmax)
+		if (s<epsilon || solution::f_calls >Nmax)
 			return XB;
 	}
 }
@@ -188,6 +167,7 @@ solution HJ_trial(solution XB, double s, matrix O)
 {
 	int *n = get_size(XB.x);
 	matrix D = unit_mat(n[0]);
+		//unit_mat(n[0]);
 	solution X;
 	for (int i = 0; i < n[0]; ++i)
 	{
@@ -217,7 +197,7 @@ solution Rosen(matrix x0, matrix s0, double alfa, double beta, double epsilon, i
 	{
 		for (int i = 0; i < n[0]; ++i)
 		{
-			Xt.x = X.x + s(i) * D[i];
+			Xt.x = X.x + s(i)*D[i];
 			Xt.fit_fun();
 			if (Xt.y<X.y)
 			{
@@ -243,7 +223,7 @@ solution Rosen(matrix x0, matrix s0, double alfa, double beta, double epsilon, i
 			matrix Q(n[0], n[0]), v(n[0], 1);
 			for (int i = 0; i < n[0]; ++i)
 				for (int j = 0; j <= i; ++j)
-					Q(i, j) = l(i); //l to lambda
+					Q(i, j) = l(i);
 			Q = D * Q;
 			v = Q[0] / norm(Q[0]);
 			D = set_col(D, v, 0);
@@ -251,7 +231,7 @@ solution Rosen(matrix x0, matrix s0, double alfa, double beta, double epsilon, i
 			{
 				matrix temp(n[0], 1);
 				for (int j = 0; j < i; ++j)
-					temp = temp + trans(Q[i]) * D[j] * D[j];
+					temp = temp + trans(Q[i])*D[j] * D[j];
 				v = (Q[i] - temp) / norm(Q[i] - temp);
 				D = set_col(D, v, i);
 			}
@@ -263,13 +243,13 @@ solution Rosen(matrix x0, matrix s0, double alfa, double beta, double epsilon, i
 		for (int i = 1; i < n[0]; ++i)
 			if (max_s < abs(s(i)))
 				max_s = abs(s(i));
-		//cout << X.x(0) << " " << X.x(1) << endl;
-		if (max_s < epsilon || solution::f_calls>Nmax)
+		if (max_s<epsilon || solution::f_calls > Nmax)
 			return X;
 	}
 }
 #endif
 #if LAB_NO>3
+//funkcja kary, matrix O - bedziemy podawali parametr a 
 solution pen(matrix x0, double c, double dc, double epsilon, int Nmax, matrix O)
 {
 	double alfa = 1, beta = 0.5, gama = 2, delta = 0.5, s = 0.5;
@@ -278,14 +258,20 @@ solution pen(matrix x0, double c, double dc, double epsilon, int Nmax, matrix O)
 	X.x = x0;
 	while (true)
 	{
+		//x-punkt startowy,s-krok
 		X1 = sym_NM(X.x, s, alfa, beta, gama, delta, epsilon, Nmax, A);
-		if (norm(X.x - X1.x) < epsilon || solution::f_calls > Nmax)
+		if (norm(X.x-X1.x)<epsilon || solution::f_calls>Nmax)
 			return X1;
 		A(0) *= dc;
 		X = X1;
 	}
 }
-
+/*
+alfa - wspó³czynnik odbicia
+beta - wspó³czynnik zawê¿enia
+gama - wspó³czynnik ekspansji
+delta - wspo³czynnik redukcji
+*/
 solution sym_NM(matrix x0, double s, double alfa, double beta, double gama, double delta, double epsilon, int Nmax, matrix O)
 {
 	int *n = get_size(x0);
@@ -307,21 +293,21 @@ solution sym_NM(matrix x0, double s, double alfa, double beta, double gama, doub
 		i_min = i_max = 0;
 		for (int i = 1; i < N; ++i)
 		{
-			if (S[i_min].y > S[i].y)
+			if (S[i_min].y>S[i].y)
 				i_min = i;
-			if (S[i_max].y < S[i].y)
+			if (S[i_max].y<S[i].y)
 				i_max = i;
 		}
 		p_sr = matrix(n[0], 1);
 		for (int i = 0; i < N; ++i)
 			if (i != i_max)
-				p_sr = S[i].x;
+				p_sr = p_sr + S[i].x;
 		p_sr = p_sr / (N - 1.0);
 		p_o.x = p_sr + alfa * (p_sr - S[i_max].x);
 		p_o.fit_fun(O);
 		if (S[i_min].y <= p_o.y && p_o.y < S[i_max].y)
 			S[i_max] = p_o;
-		else if (p_o.y<S[i_min].y)
+		else if (p_o.y < S[i_min].y)
 		{
 			p_e.x = p_sr + gama * (p_o.x - p_sr);
 			p_e.fit_fun(O);
@@ -334,7 +320,7 @@ solution sym_NM(matrix x0, double s, double alfa, double beta, double gama, doub
 		{
 			p_z.x = p_sr + beta * (S[i_max].x - p_sr);
 			p_z.fit_fun(O);
-			if (p_z.y < S[i_max].x - p_sr)
+			if (p_z.y < S[i_max].y)
 				S[i_max] = p_z;
 			else
 			{
@@ -356,6 +342,7 @@ solution sym_NM(matrix x0, double s, double alfa, double beta, double gama, doub
 }
 #endif
 #if LAB_NO>4
+//metoda najwiêkszego spadku
 solution SD(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 {
 	int *n = get_size(x0);
@@ -364,39 +351,46 @@ solution SD(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 	matrix d(n[0], 1), P(n[0], 2), limits = O;
 	solution h;
 	double b;
+	ofstream S("SD" + to_string(h0) + ".csv");
+	S << "X1;X2\n";
 	while (true)
 	{
 		X.grad();
 		d = -X.g;
 		P = set_col(P, X.x, 0);
 		P = set_col(P, d, 1);
-		if (h0 < 0)
-		{
+		if (h0 < 0) {
 			b = compute_b(X.x, d, limits);
-			h = golden(0,b , epsilon, Nmax, P);
-			X1.x = X.x + h.x * d;
+			h = golden(0, b, epsilon, Nmax, P);
+			X1.x = X.x + h.x*d;
 		}
 		else
 		{
 			X1.x = X.x + h0 * d;
 		}
-		if (solution::f_calls > Nmax || solution::g_calls > Nmax || norm(X1.x - X.x) < epsilon)
+		if (solution::f_calls > Nmax || solution::g_calls >Nmax || norm(X1.x-X.x) < epsilon)
 		{
 			X1.fit_fun();
+			S << X1.x(0) << ";" << X1.x(1) << endl;
+			S.close();
 			return X1;
 		}
+		S << X1.x(0) << ";" << X1.x(1) << endl;
 		X = X1;
 	}
 }
 
+// metoda gradientów sprzê¿onych
 solution CG(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 {
-	int* n = get_size(x0);
+	int *n = get_size(x0);
 	solution X, X1;
 	X.x = x0;
 	matrix d(n[0], 1), P(n[0], 2), limits = O;
 	solution h;
 	double b, beta;
+	ofstream S("CG" + to_string(h0) + ".csv");
+	S << "X1;X2\n";
 	X.grad();
 	d = -X.g;
 	while (true)
@@ -406,21 +400,22 @@ solution CG(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 		if (h0 < 0) {
 			b = compute_b(X.x, d, limits);
 			h = golden(0, b, epsilon, Nmax, P);
-			X1.x = X.x + h.x * d;
+			X1.x = X.x + h.x*d;
 		}
 		else
-		{
 			X1.x = X.x + h0 * d;
-		}
 		if (solution::f_calls > Nmax || solution::g_calls > Nmax || norm(X1.x - X.x) < epsilon)
 		{
 			X1.fit_fun();
+			S << X1.x(0) << ";" << X1.x(1) << endl;
+			S.close();
 			return X1;
 		}
 		X1.grad();
 		beta = pow(norm(X1.g), 2) / pow(norm(X.g), 2);
 		d = -X1.g + beta * d;
 		X = X1;
+		S << X1.x(0) << ";" << X1.x(1) << endl;
 	}
 }
 
@@ -432,29 +427,31 @@ solution Newton(matrix x0, double h0, double epsilon, int Nmax, matrix O)
 	matrix d(n[0], 1), P(n[0], 2), limits = O;
 	solution h;
 	double b;
+	ofstream S("New" + to_string(h0) + ".csv");
+	S << "X1;X2\n";
 	while (true)
 	{
 		X.grad();
 		X.hess();
-		d = -inv(X.H) * X.g;
+		d = -inv(X.H)*X.g;
 		P = set_col(P, X.x, 0);
 		P = set_col(P, d, 1);
-		if (h0 < 0)
-		{
-			b = compute_b(X.x,d , limits);
-			h = golden(0,b , epsilon, Nmax, P);
-			X1.x = X.x + h.x * d;
+		if (h0 < 0) {
+			b = compute_b(X.x, d, limits);
+			h = golden(0, b, epsilon, Nmax, P);
+			X1.x = X.x + h.x*d;
 		}
 		else
-		{
 			X1.x = X.x + h0 * d;
-		}
 		if (solution::f_calls > Nmax || solution::g_calls > Nmax || norm(X1.x - X.x) < epsilon)
 		{
 			X1.fit_fun();
+			S << X1.x(0) << ";" << X1.x(1) << endl;
+			S.close();
 			return X1;
 		}
 		X = X1;
+		S << X1.x(0) << ";" << X1.x(1) << endl;
 	}
 }
 
@@ -464,7 +461,7 @@ solution golden(double a, double b, double epsilon, int Nmax, matrix O)
 	solution A, B, C, D;
 	A.x = a;
 	B.x = b;
-	C.x = B.x - alfa*(B.x - A.x);
+	C.x = B.x - alfa * (B.x - A.x);
 	C.fit_fun(O);
 	D.x = A.x + alfa * (B.x - A.x);
 	D.fit_fun(O);
@@ -481,10 +478,10 @@ solution golden(double a, double b, double epsilon, int Nmax, matrix O)
 		{
 			A = C;
 			C = D;
-			D.x = A.x + alfa * (B.x - A.x);
+			D.x = A.x *alfa*(B.x - A.x);
 			D.fit_fun(O);
 		}
-		if (B.x - A.x<epsilon || solution::f_calls>Nmax)
+		if (B.x-A.x < epsilon || solution::f_calls>Nmax)
 		{
 			A.x = (A.x + B.x) / 2.0;
 			A.fit_fun(O);
