@@ -7,7 +7,6 @@
 
 using namespace std;
 
-void lab_5_print(matrix x0, matrix limits, double epsilon, int Nmax, double h0, ofstream& S_optSD, ofstream& S_optCG, ofstream& S_optNewton);
 int main()
 {
 	try
@@ -97,7 +96,7 @@ int main()
 		solution::clear_calls();
 #elif TASK == 5 // symlacja dla wyszukanego DA w TASK == 4
 		matrix Y0 = matrix(new double[3]{ 5,1,10 }, 3);
-		matrix * Y = solve_ode(0.0, 1.0, 1000.0, Y0);
+		matrix* Y = solve_ode(0.0, 1.0, 1000.0, Y0);
 		ofstream S("sim_t2.csv");
 		S << Y[0];
 		S.close();
@@ -116,7 +115,7 @@ int main()
 		x0(0) = -0.203577;
 
 
-			;//2.0 * R() / R.max() - 1;
+		;//2.0 * R() / R.max() - 1;
 		x0(1) = 0.272492;//2.0 * R() / R.max() - 1;
 		//cout << x0 << endl << endl;
 		alfa = 0.5;
@@ -171,120 +170,99 @@ int main()
 #endif
 #elif LAB_NO==4
 #if LAB_PART == 1
-	matrix x0(2);
-	double a, c = 1, dc = 2, epsilon = 1e-4;
-	int Nmax = 500;
-	random_device R;
-	a = 4;
-	do
-	{
-		x0(0) = 5.0 * R() / R.max() + 1;
-		x0(1) = 5.0 * R() / R.max() + 1;
-	} while (sqrt(pow(x0(0), 2) + pow(x0(1), 2)) > a);
-	cout << x0 << endl;
-	cout << sqrt(pow(x0(0), 2) + pow(x0(1), 2)) << endl << endl;
+		matrix x0(2);
+		double a, c = 1, dc = 2, epsilon = 1e-4;
+		int Nmax = 500;
+		random_device R;
+		a = 4;
+		do
+		{
+			x0(0) = 5.0 * R() / R.max() + 1;
+			x0(1) = 5.0 * R() / R.max() + 1;
+		} while (sqrt(pow(x0(0), 2) + pow(x0(1), 2)) > a);
+		cout << x0 << endl;
+		cout << sqrt(pow(x0(0), 2) + pow(x0(1), 2)) << endl << endl;
 
-	solution opt = pen(x0, c, dc, epsilon, Nmax, a);
-	cout << opt << endl;
-	cout << sqrt(pow(opt.x(0), 2) + pow(opt.x(1), 2)) << endl;
-	solution::clear_calls();
+		solution opt = pen(x0, c, dc, epsilon, Nmax, a);
+		cout << opt << endl;
+		cout << sqrt(pow(opt.x(0), 2) + pow(opt.x(1), 2)) << endl;
+		solution::clear_calls();
 #elif LAB_PART == 2
-	matrix x0(2);
-	double a, c = 1, dc = 2, epsilon = 1e-4;
-	int Nmax = 10000;
-	random_device R;
-	a = 4;
-	do
-	{
-		x0(0) = 5.0 * R() / R.max() + 1;
-		x0(1) = 5.0 * R() / R.max() + 1;
-	} while (sqrt(pow(x0(0), 2) + pow(x0(1), 2)) > a);
-	cout << x0 << endl;
-	cout << sqrt(pow(x0(0), 2) + pow(x0(1), 2)) << endl << endl;
-	
-	solution opt = pen(x0, c, dc, epsilon, Nmax, a);
-	cout << opt << endl;
-	cout << sqrt(pow(opt.x(0), 2) + pow(opt.x(1), 2)) << endl;
-	solution::clear_calls();
+		matrix x0(2);
+		double a, c = 1, dc = 2, epsilon = 1e-4;
+		int Nmax = 10000;
+		random_device R;
+		a = 4;
+		do
+		{
+			x0(0) = 5.0 * R() / R.max() + 1;
+			x0(1) = 5.0 * R() / R.max() + 1;
+		} while (sqrt(pow(x0(0), 2) + pow(x0(1), 2)) > a);
+		cout << x0 << endl;
+		cout << sqrt(pow(x0(0), 2) + pow(x0(1), 2)) << endl << endl;
+
+		solution opt = pen(x0, c, dc, epsilon, Nmax, a);
+		cout << opt << endl;
+		cout << sqrt(pow(opt.x(0), 2) + pow(opt.x(1), 2)) << endl;
+		solution::clear_calls();
 #elif LAB_PART == 3
-matrix Y0(new double[4]{ 0,x(0),100,0 }, 4);
-matrix* Y = solve_ode(0, 0.01, 7, Y0, x(1));
+		matrix Y0(new double[4]{ 0,x(0),100,0 }, 4);
+		matrix* Y = solve_ode(0, 0.01, 7, Y0, x(1));
 #endif
 #elif LAB_NO==5
-	matrix x0(2, 1), limits(2, 2);
-	double epsilon = 1e-3, h0;
-	int Nmax = 5000;
-	random_device R;
-	limits(0, 0) = limits(1, 0) = -10;
-	limits(1, 1) = limits(0, 1) = 10;
-
-	ofstream S_SD("SD.csv");
-	ofstream S_CG("CG.csv");
-	ofstream S_New("New.csv");
-	ofstream S_X1X2("Majtasy.csv");
-
-
-	S_SD << "X1;X2;Y;F_calls;G_Calls;H_Calls\n";
-	S_CG << "X1;X2;Y;F_calls;G_Calls;H_Calls\n";
-	S_New << "X1;X2;Y;F_calls;G_Calls;H_Calls\n";
-	S_X1X2 << "X1;X2\n";
-	for (int i = 0; i < 100; i++)
-	{
-
-		x0(0) = (limits(0, 1) - limits(0, 0))* R() / R.max() + limits(0, 0);
-		x0(1) = (limits(1, 1) - limits(1, 0))* R() / R.max() + limits(1, 0);
-		//cout << x0 << endl << endl;
-		S_X1X2 << x0(0)<<";"<< x0(1)<<endl<<" ; "<<endl << " ; " <<endl
-			;
+		matrix x0(2, 1), limits(2, 2);
+		double epsilon = 1e-3, h0;
+		int Nmax = 5000;
+		random_device R;
+		limits(0, 0) = limits(1, 0) = -10;
+		limits(1, 1) = limits(0, 1) = -0;
+		x0(0) = (limits(0, 1) - limits(0, 0)) * R() / R.max() + limits(0, 0);
+		x0(1) = (limits(1, 1) - limits(1, 0)) * R() / R.max() + limits(1, 0);
+		cout << x0 << endl << endl;
 		h0 = 0.05;
-		lab_5_print(x0, limits, epsilon, Nmax, h0, S_SD, S_CG, S_New);
-
-		h0 = 0.12;
-		lab_5_print(x0, limits, epsilon, Nmax, h0, S_SD, S_CG, S_New);
-		
-		h0 = -1;
-		lab_5_print(x0, limits, epsilon, Nmax, h0, S_SD, S_CG, S_New);
-	}
-	S_SD.close();
-	S_CG.close();
-	S_New.close();
-	S_X1X2.close();
-
-
+		solution opt_SD = SD(x0, h0, epsilon, Nmax, limits);
+		cout << opt_SD << endl << endl;
+		solution::clear_calls();
+		solution opt_CG = CG(x0, h0, epsilon, Nmax, limits);
+		cout << opt_CG << endl << endl;
+		solution::clear_calls();
+		solution opt_Newton = Newton(x0, h0, epsilon, Nmax, limits);
+		cout << opt_Newton << endl << endl;
+		solution::clear_calls();
 
 
 #elif LAB_NO==6
 #if LAB_PART == 1
-	matrix x0(2), limits(2, 3);
-	double epsilon = 1e-3;
-	int Nmax = 5000;
-	random_device R;
-	limits(0, 0) = limits(1, 0) = -10;
-	limits(1, 1) = limits(0, 1) = 10;
-	double w = 0.5;
-	x0(0) = 1;// (limits(0, 1) - limits(0, 0))* R() / R.max() + limits(0, 0);
-	x0(1) = 1;// (limits(1, 1) - limits(1, 0))* R() / R.max() + limits(1, 0);
-	limits(0, 2) = w;
-	solution opt = Powell(x0, epsilon, Nmax, limits);
-	cout << opt << endl;
-	solution::clear_calls();
+		matrix x0(2), limits(2, 3);
+		double epsilon = 1e-3;
+		int Nmax = 5000;
+		random_device R;
+		limits(0, 0) = limits(1, 0) = -10;
+		limits(1, 1) = limits(0, 1) = 10;
+		double w = 0;
+		x0(0) =  (limits(0, 1) - limits(0, 0))* R() / R.max() + limits(0, 0);
+		x0(1) = (limits(1, 1) - limits(1, 0))* R() / R.max() + limits(1, 0);
+		limits(0, 2) = w;
+		solution opt = Powell(x0, epsilon, Nmax, limits);
+		cout << opt << endl;
+		solution::clear_calls();
 #else
-	matrix x0(2), limits(2, 3);
-	double epsilon = 1e-3;
-	int Nmax = 5000;
-	random_device R;
-	limits(0, 0) = 0.2;
-	limits(0, 1) = 1;
-	limits(1, 0) = 0.01;
-	limits(1, 1) = 0.05;
-	double w = 1;
-	x0(0) = (limits(0, 1) - limits(0, 0))* R() / R.max() + limits(0, 0);
-	x0(1) = (limits(1, 1) - limits(1, 0))* R() / R.max() + limits(1, 0);
-	limits(0, 2) = w;
-	solution opt = Powell(x0, epsilon, Nmax, limits);
-	cout << opt << endl;
-	solution::clear_calls();
-	
+		matrix x0(2), limits(2, 3);
+		double epsilon = 1e-3;
+		int Nmax = 5000;
+		random_device R;
+		limits(0, 0) = 0.2;
+		limits(0, 1) = 1;
+		limits(1, 0) = 0.01;
+		limits(1, 1) = 0.05;
+		double w = 1;
+		x0(0) = (limits(0, 1) - limits(0, 0)) * R() / R.max() + limits(0, 0);
+		x0(1) = (limits(1, 1) - limits(1, 0)) * R() / R.max() + limits(1, 0);
+		limits(0, 2) = w;
+		solution opt = Powell(x0, epsilon, Nmax, limits);
+		cout << opt << endl;
+		solution::clear_calls();
+
 
 #endif
 #elif LAB_NO==7
@@ -297,20 +275,4 @@ matrix* Y = solve_ode(0, 0.01, 7, Y0, x(1));
 	}
 	system("pause");
 	return 0;
-}
-
-void lab_5_print(matrix x0, matrix limits, double epsilon, int Nmax, double h0, ofstream &S_optSD , ofstream& S_optCG, ofstream& S_optNewton)
-{
-	solution opt_SD = SD(x0, h0, epsilon, Nmax, limits);
-	//S_optSD << x0(0) << ";" << x0(1) << ";" << opt_SD.x(0) << ";" << opt_SD.x(1) << ";" << opt_SD.y(0) << ";" << opt_SD.f_calls << ";" << opt_SD.g_calls << ";" << opt_SD.H_calls << endl;
-	//cout << opt_SD << endl << endl;
-	solution::clear_calls();
-	solution opt_CG = CG(x0, h0, epsilon, Nmax, limits);
-	//S_optCG << x0(0) << ";" << x0(1) << ";" << opt_CG.x(0) << ";" << opt_CG.x(1) << ";" << opt_CG.y(0) << ";" << opt_CG.f_calls << ";" << opt_CG.g_calls << ";" << opt_CG.H_calls << endl;
-	//cout << opt_CG << endl << endl;
-	solution::clear_calls();
-	solution opt_Newton = Newton(x0, h0, epsilon, Nmax, limits);
-	//S_optNewton << x0(0) << ";" << x0(1) << ";" << opt_Newton.x(0) << ";" << opt_Newton.x(1) << ";" << opt_Newton.y(0) << ";" << opt_Newton.f_calls << ";" << opt_Newton.g_calls << ";" << opt_Newton.H_calls << endl;
-	//cout << opt_Newton << endl << endl;
-	solution::clear_calls();
 }
