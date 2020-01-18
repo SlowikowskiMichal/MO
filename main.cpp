@@ -266,7 +266,19 @@ int main()
 
 #endif
 #elif LAB_NO==7
-
+	matrix x0(2, 1), limits(2, 2), O(1,1);
+	double epsilon = 1e-3;
+	int Nmax = 5000, N = 2;
+	random_device R;
+	limits(0, 0) = limits(1, 0) = -5;
+	limits(1, 1) = limits(0, 1) = 5;
+	O(0) = 0.1;
+	
+	
+	solution optEA = EA(N, limits,epsilon,Nmax,O);
+	cout << optEA << endl << endl;
+	solution::clear_calls();
+	
 #endif
 	}
 	catch (char* EX_INFO)
