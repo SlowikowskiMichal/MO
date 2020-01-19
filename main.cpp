@@ -266,18 +266,33 @@ int main()
 
 #endif
 #elif LAB_NO==7
-	matrix x0(2, 1), limits(2, 2), O(1,1);
-	double epsilon = 1e-3;
+	matrix limits(2, 2), O(1,1);
+	double epsilon = 1e-4;
 	int Nmax = 5000, N = 2;
 	random_device R;
 	limits(0, 0) = limits(1, 0) = -5;
 	limits(1, 1) = limits(0, 1) = 5;
-	O(0) = 0.1;
 	
+	double sigma[] = { 0.01, 0.1, 1.0, 10.0, 100.0 };
+
+	for (int i = 0; i < 5; i++)
+	{
+
+		O(0) = sigma[i];
+		ofstream S("sim"+ to_string(i) + ".csv");
+		S << "X1;X2;Y;f_calls\n";
+		
+		for (int j = 0; j < 100; j++)
+		{
+			solution optEA = EA(N, limits, epsilon, Nmax, O);
+			S << optEA.x(0) << ";" << optEA.x(1) << ";" << optEA.y(0) << ";" << optEA.f_calls << endl;
+			solution::clear_calls();
+		}
+		
+		S.close();
+	}
+
 	
-	solution optEA = EA(N, limits,epsilon,Nmax,O);
-	cout << optEA << endl << endl;
-	solution::clear_calls();
 	
 #endif
 	}
